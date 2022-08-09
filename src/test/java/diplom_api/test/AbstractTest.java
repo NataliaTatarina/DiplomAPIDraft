@@ -1,4 +1,5 @@
 package diplom_api.test;
+import diplom_api.pojo.Ingredients;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
@@ -17,4 +18,6 @@ public class AbstractTest {
     protected String testName = RandomStringUtils.randomAlphabetic(5) + "TestName";
     protected UserRegister userRegister = new UserRegister (testEmail, testPassword, testName);
     protected UserLogin userLogin = new UserLogin (testEmail, testPassword);
+
+    protected Ingredients ingredients;
 }
