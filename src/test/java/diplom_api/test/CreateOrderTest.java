@@ -18,9 +18,9 @@ public class CreateOrderTest extends AbstractTest{
     public void createUserBeforeCreateOrderTest() {
         // Создать пользователя
         // Получить accessToken
-     token =  createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
-     //  token = loginUserResponse(requestSpec, userLogin).getAccessToken().replace("Bearer ", "");
-       System.out.println(token);
+        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+        //  token = loginUserResponse(requestSpec, userLogin).getAccessToken().replace("Bearer ", "");
+        System.out.println(token);
         // Получить список ингредиентов
         ingredients = getIngredients(requestSpec);
     }
