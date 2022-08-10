@@ -5,7 +5,7 @@ import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
-public class GetIngredients {
+public class GetIngredientsProc {
     public static Ingredients getIngredients (RequestSpecification requestSpec)
     {
         return

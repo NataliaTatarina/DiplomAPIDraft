@@ -97,19 +97,6 @@ public class UserProc {
                 .body("success",
                         equalTo(false));
     }
-    public static void updateUserSingleFieldWithAutorisation (RequestSpecification requestSpec,String json, String token)
-    {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .auth().oauth2(token)
-                .when()
-                .patch("auth/user")
-                .then()
-                .statusCode(SC_OK);
-    }
-
     public static void updateUserWithAuthCheckStatus(RequestSpecification requestSpec, String json, String token) {
         given()
                 .spec(requestSpec)

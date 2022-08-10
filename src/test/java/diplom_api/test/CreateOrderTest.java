@@ -1,30 +1,32 @@
 package diplom_api.test;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static diplom_api.proc.GetIngredients.getIngredients;
-import static diplom_api.proc.UserProc.createUserResponse;
-import static diplom_api.proc.UserProc.deleteUserCheckStatus;
-import static io.restassured.RestAssured.given;
-import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.Matchers.equalTo;
+import static diplom_api.proc.CreateOrderProc.*;
+import static diplom_api.proc.GetIngredientsProc.getIngredients;
+import static diplom_api.proc.UserProc.*;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_OK;
 
 public class CreateOrderTest extends AbstractTest{
 
     private String token;
 
     @Before
-    public void createUserBeforeLoginUserTest() {
+    public void createUserBeforeCreateOrderTest() {
         // Создать пользователя
         // Получить accessToken
-        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+     token =  createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+     //  token = loginUserResponse(requestSpec, userLogin).getAccessToken().replace("Bearer ", "");
+       System.out.println(token);
+        // Получить список ингредиентов
+        ingredients = getIngredients(requestSpec);
     }
 
     @After
-    public void deleteUserAfterLoginUserTest() {
+    public void deleteUserAfterCreateOrderTest() {
         // Удалить пользователя
         deleteUserCheckStatus(requestSpec, userRegister, token);
     }
@@ -33,119 +35,145 @@ public class CreateOrderTest extends AbstractTest{
     @Test
     public void createOrderWithoutAuthWithoutIngredientsStatusTest ()
     {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body("")
-                .when()
-                .post("orders")
-                .then()
-                .statusCode(SC_BAD_REQUEST);
+        createOrderWithoutAuthStatus(requestSpec, "", SC_BAD_REQUEST);
     }
 
     @Test
     public void createOrderWithoutAuthWithoutIngredientsResponseTest ()
     {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body("")
-                .when()
-                .post("orders")
-                .then()
-                .body("message",
-                        equalTo("Ingredient ids must be provided"))
-                .and()
-                .body("success",
-                        equalTo(false));
+        createOrderWithoutAuthRespone(requestSpec, "", false, "Ingredient ids must be provided");
+    }
+
+    // Создать заказ без авторизации и c некорректным хэшем одного ингредиента
+    @Test
+    public void createOrderWithoutAuthWithWrongHashForSingleIngredientStatusTest ()
+    {
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\""+"]}";
+        System.out.println(json);
+        createOrderWithoutAuthStatus(requestSpec, json, SC_BAD_REQUEST);
+    }
+    @Test
+    public void createOrderWithoutAuthWithWrongHashForSingleIngredientResponseTest ()
+    {
+        String json = "{\"ingredients\":[\"123456789012345678901234\"]}";
+        System.out.println(json);
+        createOrderWithoutAuthRespone(requestSpec, json, false, "One or more ids provided are incorrect");
     }
 
     // Создать заказ без авторизации и c некорректным хэшем одного из двух ингредиентов
     @Test
-    public void createOrderWithoutAuthWithWrongHashForOneIngredientResponseTest ()
+    public void createOrderWithoutAuthWithWrongHashForOneOfTwoIngredientsStatusTest ()
     {
-        ingredients = getIngredients(requestSpec);
-        String json = "{\"ingredients\":[\"" + ingredients.getData().get(1).get_id()+"1"+ "\"}]";
+               String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
         System.out.println(json);
-       given()
-                    .spec(requestSpec)
-                    .and()
-                    .body(json)
-                    .when()
-                    .post("orders")
-                    .then()
-               .body("message",
-                       equalTo("Ingredient ids must be provided"))
-               .and()
-               .body("success",
-                       equalTo(false));
+        createOrderWithoutAuthStatus(requestSpec, json, SC_OK);
     }
 
     @Test
-    public void createOrderWithoutAuthWithWrongHashForOneIngredientStatusTest ()
+    public void createOrderWithoutAuthWithWrongHashForOneOfTwoIngredientsResponseTest ()
     {
-        ingredients = getIngredients(requestSpec);
-        String json = "{\"ingredients\":[\"" + ingredients.getData().get(1).get_id()+"1"+ "\"}]";
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
         System.out.println(json);
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .when()
-                .post("orders")
-                .then()
-                .statusCode(SC_BAD_REQUEST);
+        createOrderWithoutAuthRespone(requestSpec, json, true, null);
+    }
+
+    // Создать заказ без авторизации и c корректным хэшем двух ингредиентов
+    @Test
+    public void createOrderWithoutAuthWithTwoCorrectIngredientsStatusTest ()
+    {
+                String json = "{\"ingredients\":[\"" + ingredients.getData().get(2).get_id()+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithoutAuthStatus(requestSpec, json, SC_OK);
+    }
+
+    @Test
+    public void createOrderWithoutAuthWithTwoCorrectIngredientsResponseTest ()
+    {
+        String json = "{\"ingredients\":[\"" + ingredients.getData().get(2).get_id()+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithoutAuthRespone(requestSpec, json, true, null);
     }
 
     // Создать заказ с авторизацией и без ингредиентов
     @Test
     public void createOrderWithAuthWithoutIngredientsStatusTest ()
     {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body("")
-                .auth().oauth2(token)
-                .when()
-                .post("orders")
-                .then()
-                .statusCode(SC_BAD_REQUEST);
+        createOrderWithAuthStatus(requestSpec, token, "", SC_BAD_REQUEST);
     }
 
     @Test
     public void createOrderWithAuthWithoutIngredientsResponseTest ()
     {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body("")
-                .auth().oauth2(token)
-                .when()
-                .post("orders")
-                .then()
-                .body("message",
-                        equalTo("Ingredient ids must be provided"))
-                .and()
-                .body("success",
-                        equalTo(false));
+        createOrderWithAuthRespone( requestSpec, token, "",
+                false, "Ingredient ids must be provided");
     }
 
-    // Создать заказ c авторизацией и c некорректным хэшем одного из двух ингредиентов
+    // Создать заказ c авторизацией и c некорректным хэшем одного ингредиента
     @Test
-    public void createOrderWithAuthWithWrongHashForOneIngredientResponseTest ()
+    public void createOrderWithAuthWithWrongHashForSingleIngredientStatusTest ()
     {
-       ingredients = getIngredients(requestSpec);
-       String json = "{\"ingredients\":[\"" + "123456789012345678901234" + "\"]}";
-       System.out.println(json);
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .auth().oauth2(token)
-                .when()
-                .post("orders")
-                .then()
-                .statusCode(SC_INTERNAL_SERVER_ERROR);
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\""+"]}";
+        System.out.println(json);
+        createOrderWithAuthStatus(requestSpec, token, json, SC_BAD_REQUEST);
+    }
+    @Test
+    public void createOrderWithAuthWithWrongHashForSingleIngredientResponseTest ()
+    {
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\""+"]}";
+        System.out.println(json);
+        createOrderWithAuthRespone(requestSpec, token, json, false,
+                "One or more ids provided are incorrect");
+    }
 
-            }
+    // Создать заказ с авторизацией и c некорректным хэшем одного из двух ингредиентов
+    @Test
+    public void createOrderWithAuthWithWrongHashForOneOfTwoIngredientsStatusTest ()
+    {
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithAuthStatus(requestSpec, token, json, SC_OK);
+    }
+
+    @Test
+    public void createOrderWithAuthWithWrongHashForOneOfTwoIngredientsResponseTest ()
+    {
+        String json = "{\"ingredients\":[\"" + "123456789012345678901234"+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithAuthRespone(requestSpec, token, json, true,
+                null);
+    }
+
+    // Создать заказ с авторизацией и c корректными хэшами двух ингредиентов
+    @Test
+    public void createOrderWithAuthWithTwoCorrectIngredientsStatusTest ()
+    {
+        String json = "{\"ingredients\":[\"" + ingredients.getData().get(2).get_id()+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithAuthStatus(requestSpec, token, json, SC_OK);
+    }
+
+    @Test
+    public void createOrderWithAuthWithTwoCorrectIngredientsResponseTest ()
+    {
+        String json = "{\"ingredients\":[\"" + ingredients.getData().get(2).get_id()+ "\", " +
+                "\"" + ingredients.getData().get(1).get_id()+ "\"" +
+                "]}";
+        System.out.println(json);
+        createOrderWithAuthRespone(requestSpec, token, json, true,
+                null);
+    }
 }

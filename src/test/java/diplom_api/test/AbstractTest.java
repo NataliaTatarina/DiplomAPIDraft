@@ -20,4 +20,5 @@ public class AbstractTest {
     protected UserLogin userLogin = new UserLogin (testEmail, testPassword);
 
     protected Ingredients ingredients;
+
 }
