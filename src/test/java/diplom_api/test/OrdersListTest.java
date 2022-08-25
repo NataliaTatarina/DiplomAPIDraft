@@ -1,70 +1,70 @@
 package diplom_api.test;
 
-import diplom_api.pojo.Ingredients;
 import diplom_api.pojo.OrdersList;
-import diplom_api.pojo.UserRegisterResponse;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static diplom_api.proc.CreateOrderProc.createOrderWithAuthRespone;
+
+import static diplom_api.proc.CreateOrderProc.createOrderCheck;
 import static diplom_api.proc.GetIngredientsProc.getIngredients;
-import static diplom_api.proc.UserProc.createUserResponse;
-import static diplom_api.proc.UserProc.deleteUserCheckStatus;
+import static diplom_api.proc.GetOrdersListProc.getOrderList;
+import static diplom_api.proc.UserProc.createUserCheckResponse;
 import static io.restassured.RestAssured.given;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class OrdersListTest extends AbstractTest {
     private String token;
-    private OrdersList ordersList;
-    private String jsonFirstOrder;
-    private String jsonSecondOrder;
 
     @Before
-    public void createUserCreateOrders() {
+    public void createUserAndCreateOrdersBeforeOrderListTest() {
         // Создать пользователя
         // Получить accessToken
-        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
-        //  token = loginUserResponse(requestSpec, userLogin).getAccessToken().replace("Bearer ", "");
-        System.out.println(token);
+        token = createUserCheckResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
         // Получить список ингредиентов
         ingredients = getIngredients(requestSpec);
+        // Проверить, что список ингредиентов не нулевой, есть хотя бы 1 ингредиент
+        Assert.assertNotNull("list og ingredients is empty", ingredients);
+        // Поучить длину списка ингредиентов
+        int size = ingredients.getData().size();
         // Создать два заказа
-        String json1 = "{\"ingredients\":[\"" + ingredients.getData().get(1).get_id() + "\", " +
-                "\"" + ingredients.getData().get(2).get_id() + "\"" +
+        String json1 = "{\"ingredients\":[\"" + ingredients.getData().get(0).get_id() + "\", " +
+                "\"" + ingredients.getData().get(size - 1).get_id() + "\"" +
                 "]}";
-        System.out.println(json1);
-        createOrderWithAuthRespone(requestSpec, token, json1, true,
-                null);
-        String json2 = "{\"ingredients\":[\"" + ingredients.getData().get(3).get_id() + "\", " +
-                "\"" + ingredients.getData().get(4).get_id() + "\"" +
+        createOrderCheck(requestSpec, token, json1, SC_OK, true, null);
+        String json2 = "{\"ingredients\":[\"" + ingredients.getData().get(0).get_id() + "\", " +
+                "\"" + ingredients.getData().get(size - 1).get_id() + "\"" +
                 "]}";
-        System.out.println(json2);
-        createOrderWithAuthRespone(requestSpec, token, json2, true,
-                null);
+        createOrderCheck(requestSpec, token, json2, SC_OK, true, null);
     }
 
     @After
-    public void deleteUser() {
+    public void deleteUserAfterOrderListTest() {
         // Удалить пользователя
-        deleteUserCheckStatus(requestSpec, userRegister, token);
+        // deleteUserCheckStatus(requestSpec, userRegister, token);
     }
 
-    // Получить список с авторизацией
+    // Получить список заказов для авторизированного пользователя
     @Test
-    public void getOrdersListUserWithAuthTest() {
-        OrdersList ordersList = given()
+    public void getOrdersListForUserWithAuthStatusTest() {
+        given()
                 .spec(requestSpec)
                 .and()
                 .auth().oauth2(token)
                 .when()
                 .get("orders")
-                .body()
-                .as(OrdersList.class);
+                .then()
+                .statusCode(SC_OK);
+    }
+
+    @Test
+    public void getOrdersListForUserWithAuthResponseTest() {
+        OrdersList ordersList = getOrderList(requestSpec, token);
         // Убедиться. что вернулся ожидаемый JSON
         MatcherAssert.assertThat(ordersList,
                 notNullValue());
@@ -72,24 +72,15 @@ public class OrdersListTest extends AbstractTest {
     }
 
     // Получить список без авторизации
+    // Проверить статус ответа
     @Test
-    public void getOrdersListUserWithoutAuthStatusTest() {
+    public void getOrdersListForUserWithoutAuthTest() {
         given()
                 .spec(requestSpec)
                 .when()
                 .get("orders")
                 .then()
-                .statusCode(SC_UNAUTHORIZED);
-    }
-
-    @Test
-    public void getOrdersListUserWithoutAuthResponseTest() {
-        // Получить список без авторизации
-        given()
-                .spec(requestSpec)
-                .when()
-                .get("orders")
-                .then()
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message",
                         Matchers.equalTo("You should be authorised"))
                 .and()

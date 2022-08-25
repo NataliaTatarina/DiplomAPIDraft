@@ -1,8 +1,8 @@
 package diplom_api.pojo;
 
 public class User {
-private String email;
-private String name;
+    private String email;
+    private String name;
 
     public String getEmail() {
         return email;

@@ -10,18 +10,9 @@ import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
 
 public class UserProc {
-    public static void createUserWithountNessaryFieldCheckStatus(RequestSpecification requestSpec, UserRegister userRegister) {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(userRegister)
-                .when()
-                .post("auth/register")
-                .then()
-                .statusCode(SC_FORBIDDEN);
-    }
 
-    public static void createUserWithountNessaryFieldCheckResponse(RequestSpecification requestSpec, UserRegister userRegister) {
+    // Запрос на создание пользователя без необходимых полей
+    public static void createUserWithoutNecessaryFieldCheck(RequestSpecification requestSpec, UserRegister userRegister) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -29,6 +20,7 @@ public class UserProc {
                 .when()
                 .post("auth/register")
                 .then()
+                .statusCode(SC_FORBIDDEN)
                 .body("message",
                         equalTo("Email, password and name are required fields"))
                 .and()
@@ -36,7 +28,9 @@ public class UserProc {
                         equalTo(false));
     }
 
-    public static UserRegisterResponse createUserResponse(RequestSpecification requestSpec, UserRegister userRegister) {
+
+    // Запрос на создание пользователя
+    public static UserRegisterResponse createUserCheckResponse(RequestSpecification requestSpec, UserRegister userRegister) {
         return
                 given()
                         .spec(requestSpec)
@@ -48,6 +42,8 @@ public class UserProc {
                         .as(UserRegisterResponse.class);
     }
 
+    // Запрос на удаление пользователя
+    // Проверяется, что возвращаемый статус - SC_ACCEPTED
     public static void deleteUserCheckStatus(RequestSpecification requestSpec, UserRegister userRegister, String token) {
         given()
                 .spec(requestSpec)
@@ -60,7 +56,8 @@ public class UserProc {
                 .statusCode(SC_ACCEPTED);
     }
 
-    public static UserRegisterResponse loginUserResponse(RequestSpecification requestSpec, UserLogin userLogin) {
+    // Заррос на авторизацию пользователя
+    public static UserRegisterResponse loginUserCheckResponse(RequestSpecification requestSpec, UserLogin userLogin) {
         return
                 given()
                         .spec(requestSpec)
@@ -72,18 +69,20 @@ public class UserProc {
                         .as(UserRegisterResponse.class);
     }
 
-    public static void loginUserWithOneWrongFieldCheckStatus(RequestSpecification requestSpec, UserLogin userLogin) {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(userLogin)
-                .when()
-                .post("auth/login")
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
+    // Заррос на авторизацию пользователя - проверка статуса
+    public static void loginUserCheckStatus(RequestSpecification requestSpec, UserLogin userLogin) {
+                    given()
+                        .spec(requestSpec)
+                        .and()
+                        .body(userLogin)
+                        .when()
+                        .post("auth/login")
+                        .then()
+                        .statusCode(SC_OK);
     }
-
-    public static void loginUserWithOneWrongFieldCheckResponse(RequestSpecification requestSpec, UserLogin userLogin) {
+    // Запрос на авторизацию пользователя без одного из необходимых полей
+    // Проверяется, что возвращаемый статус - SC_UNAUTHORIZED
+    public static void loginUserWithOneWrongFieldCheck(RequestSpecification requestSpec, UserLogin userLogin) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -91,13 +90,17 @@ public class UserProc {
                 .when()
                 .post("auth/login")
                 .then()
+                .statusCode(SC_UNAUTHORIZED)
                 .body("message",
                         equalTo("email or password are incorrect"))
                 .and()
                 .body("success",
                         equalTo(false));
     }
-    public static void updateUserWithAuthCheckStatus(RequestSpecification requestSpec, String json, String token) {
+
+    // Запрос на измение полей учетной записи пользователя
+    // Проверяется, что возвращаемый статус соответствует ожидаемому
+    public static void updateUserCheckStatusAndResponse(RequestSpecification requestSpec, String json, String token, int status) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -106,28 +109,7 @@ public class UserProc {
                 .when()
                 .patch("auth/user")
                 .then()
-                .statusCode(SC_OK);
-    }
-
-    public static void updateUserWithoutAuthCheckStatus(RequestSpecification requestSpec, String json) {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .when()
-                .patch("auth/user")
-                .then()
-                .statusCode(SC_UNAUTHORIZED);
-    }
-
-    public static void updateUserWithoutAuthCheckResponse(RequestSpecification requestSpec, String json) {
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .when()
-                .patch("auth/user")
-                .then()
+                .statusCode(status)
                 .body("message",
                         equalTo("You should be authorised"))
                 .and()
@@ -135,7 +117,9 @@ public class UserProc {
                         equalTo(false));
     }
 
-    public static UserRegisterResponse updateUserdWithAuthResponse(RequestSpecification requestSpec, String json, String token) {
+
+    // Запрос на измение полей учетной записи авторизированного пользователя
+    public static UserRegisterResponse updateUserWithAuthCheckResponse(RequestSpecification requestSpec, String json, String token) {
         return
                 given()
                         .spec(requestSpec)
@@ -147,6 +131,5 @@ public class UserProc {
                         .body()
                         .as(UserRegisterResponse.class);
     }
-
 
 }

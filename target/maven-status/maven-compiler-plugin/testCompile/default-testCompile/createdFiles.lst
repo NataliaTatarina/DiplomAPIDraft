@@ -1,5 +1,5 @@
+diplom_api\test\CreateUserTest.class
 diplom_api\proc\UserProc.class
 diplom_api\test\AbstractTest.class
 diplom_api\test\LoginUserTest.class
-diplom_api\test\CreateUserTest.class
 diplom_api\test\UpdateUser.class

@@ -1,7 +1,5 @@
 package diplom_api.pojo;
 
-import com.sun.net.httpserver.Authenticator;
-
 import java.util.List;
 
 public class Ingredients {

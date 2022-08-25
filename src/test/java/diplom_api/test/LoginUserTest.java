@@ -1,4 +1,5 @@
 package diplom_api.test;
+
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class LoginUserTest extends AbstractTest {
     public void createUserBeforeLoginUserTest() {
         // Создать пользователя
         // Получить accessToken
-        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+        token = createUserCheckResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
     }
 
     @After
@@ -27,9 +28,10 @@ public class LoginUserTest extends AbstractTest {
         deleteUserCheckStatus(requestSpec, userRegister, token);
     }
 
-    // Логин под существующим паролем
+    // Успешная авторизация под существующим паролем
+    // Проверить статус ответа
     @Test
-    public void loginUserSuccessTest() {
+    public void loginCorrectUserStatusTest() {
         given()
                 .spec(requestSpec)
                 .and()
@@ -40,46 +42,41 @@ public class LoginUserTest extends AbstractTest {
                 .statusCode(SC_OK);
     }
 
+    // Проверить возвращаемый response
     @Test
-    public void loginUserSuccessResponseTest() {
+    public void loginCorrectUserResponseTest() {
         UserRegisterResponse userLoginResponse =
-                loginUserResponse(requestSpec, userLogin);
+                loginUserCheckResponse(requestSpec, userLogin);
         // Убедиться. что вернулся ожидаемый JSON
         MatcherAssert.assertThat(userLoginResponse,
                 notNullValue());
+        // Убедиться, что можно разлогиниться - получть refreshToken из ответа
+        // Сделать logout
+        String json = "{\"token\": \"" + userLoginResponse.getRefreshToken() + "\"}";
+        given()
+                .spec(requestSpec)
+                .and()
+                .body(json)
+                .when()
+                .post("auth/logout")
+                .then()
+                .statusCode(SC_OK);
     }
 
-    // Логин с неверным логином и паролем
+    // Авторизация с неверным логином и паролем
     // Пользователь существует, email некорректный
     @Test
-    public void loginUserWithWrongEmailFailsTest()
-    {
+    public void loginUserWithWrongEmailFallsStatusTest() {
         UserLogin userLoginWithWrongEmail =
-                new UserLogin(testEmail+testEmail, testPassword);
-        loginUserWithOneWrongFieldCheckStatus (requestSpec, userLoginWithWrongEmail);
+                new UserLogin(testEmail + testEmail, testPassword);
+        loginUserWithOneWrongFieldCheck(requestSpec, userLoginWithWrongEmail);
     }
 
     // Пользователь существует, пароль некорректный
     @Test
-    public void loginUserWithWrongPasswordFailsTest()
-    {
-        UserLogin userLoginWithWrongPassword =
-                new UserLogin(testEmail, testPassword+testPassword);
-        loginUserWithOneWrongFieldCheckStatus (requestSpec, userLoginWithWrongPassword);
-    }
-
-    @Test
-    public void loginUserWithWrongPasswordFailsResponseTest()
-    {
-        UserLogin userLoginWithWrongPassword =  new UserLogin(testEmail, testPassword+testPassword);
-        loginUserWithOneWrongFieldCheckResponse(requestSpec, userLoginWithWrongPassword);
-    }
-
-    @Test
-    public void loginUserWithWrongEmailFailsResponseTest()
-    {
-        UserLogin userLoginWithWrongEmail =  new UserLogin(testEmail+testEmail, testPassword);
-        loginUserWithOneWrongFieldCheckResponse(requestSpec, userLoginWithWrongEmail);
+    public void loginUserWithWrongPasswordFallsResponseTest() {
+        UserLogin userLoginWithWrongPassword = new UserLogin(testEmail, testPassword + testPassword);
+        loginUserWithOneWrongFieldCheck(requestSpec, userLoginWithWrongPassword);
     }
 
 }

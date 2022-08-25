@@ -14,7 +14,8 @@ public class AbstractTest {
             .header("Content-type", "application/json")
             .filter(new ResponseLoggingFilter());
     protected String testEmail = RandomStringUtils.randomAlphabetic(5) + "@yandex.ru";
-    protected String testPassword = RandomStringUtils.randomAlphabetic(5)+"TestPassword";
+  //  protected String testPassword = RandomStringUtils.randomAlphabetic(5)+"TestPassword";
+    protected String testPassword = "Q!67mo8)";
     protected String testName = RandomStringUtils.randomAlphabetic(5) + "TestName";
     protected UserRegister userRegister = new UserRegister (testEmail, testPassword, testName);
     protected UserLogin userLogin = new UserLogin (testEmail, testPassword);

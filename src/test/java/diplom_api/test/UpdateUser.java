@@ -1,4 +1,6 @@
 package diplom_api.test;
+
+import diplom_api.pojo.UserLogin;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +22,7 @@ public class UpdateUser extends AbstractTest {
     public void createUserBeforeUpdateUserTest() {
         // Создать пользователя
         // Получить accessToken
-        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+        token = createUserCheckResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
     }
 
     @After
@@ -31,101 +33,74 @@ public class UpdateUser extends AbstractTest {
 
     // Изменение данных пользователя без авторизации
     @Test
-    public void updateUserNameWithoutAuthorizationTest() {
+    public void updateUserNameWithoutAuthorizationFallsTest() {
         String json = "{\"name\": \"" + "Update" + testName + "\"}";
-        updateUserWithoutAuthCheckStatus(requestSpec, json);
+        updateUserCheckStatusAndResponse(requestSpec, json, "", SC_UNAUTHORIZED);
     }
 
     @Test
-    public void updateUserEmailWithoutAuthorizationTest() {
+    public void updateUserEmailWithoutAuthorizationFallsTest() {
         String json = "{\"email\": \"" + "Update" + testEmail + "\"}";
-        updateUserWithoutAuthCheckStatus(requestSpec, json);
+        updateUserCheckStatusAndResponse(requestSpec, json,"",SC_UNAUTHORIZED);
     }
 
     @Test
-    public void updateUserPasswordWithoutAuthorizationTest() {
+    public void updateUserPasswordWithoutAuthorizationFallsTest() {
         String json = "{\"password\": \"" + "Update" + testPassword + "\"}";
-        updateUserWithoutAuthCheckStatus(requestSpec, json);
+        updateUserCheckStatusAndResponse(requestSpec, json, "", SC_UNAUTHORIZED);
     }
 
-    // Изменить имя - resp
+    // Изменение данных пользователя с авторизацией - проверка возвращаемого ответа
+    // Корректно изменить имя
     @Test
-    public void updateUserNameWithoutAuthorizationResponseTest() {
-        String json = "{\"name\": \"" + "Update" + testName + "\"}";
-        updateUserWithoutAuthCheckResponse(requestSpec, json);
-    }
-
-    // Изменить пароль - resp
-    @Test
-    public void updateUserPasswordWithoutAuthorizationResponseTest() {
-        String json = "{\"password\": \"" + "Update" + testPassword + "\"}";
-        updateUserWithoutAuthCheckResponse(requestSpec, json);
-    }
-
-    // Изменить email - resp
-    @Test
-    public void updateUserEmailWithoutAuthorizationResponseTest() {
-        String json = "{\"email\": \"" + "Update" + testEmail + "\"}";
-        updateUserWithoutAuthCheckResponse(requestSpec, json);
-    }
-
-    // Изменение данных пользователя с авторизацией
-    // Корректно изменить имя - проверить статус
-    @Test
-    public void updateUserNameCorrectTest() {
-        String json = "{\"name\": \"" + "Update" + testName + "\"}";
-        updateUserWithAuthCheckStatus(requestSpec, json, token);
-    }
-
-    @Test
-    public void updateUserEmailCorrectTest() {
-        String json = "{\"email\": \"" + "Update" + testEmail + "\"}";
-        updateUserWithAuthCheckStatus(requestSpec, json, token);
-    }
-
-    @Test
-    public void updateUserPasswordCorrectTest() {
-        String json = "{\"password\": \"" + "Update" + testPassword + "\"}";
-        updateUserWithAuthCheckStatus(requestSpec, json, token);
-    }
-
-    // Корректно изменить имя - проверить response
-    @Test
-    public void updateUserNameCorrectResponseTest() {
+    public void updateCorrectUserNameResponseTest() {
         String json = "{\"name\": \"" + "Update" + testName + "\"}";
         UserRegisterResponse userUpdateName =
-                updateUserdWithAuthResponse(requestSpec, json, token);
+                updateUserWithAuthCheckResponse(requestSpec, json, token);
         MatcherAssert.assertThat(userUpdateName,
                 notNullValue());
+        // Авторизироваться, из ответа получть name, сравнить с обновленным занчением
+        UserRegisterResponse loginUserRespone = loginUserCheckResponse(requestSpec, userLogin);
+        MatcherAssert.assertThat(loginUserRespone.getUser().getName(), equalTo("Update" + testName));
     }
 
-    // Корректно изменить пароль - проверить response
+    // Корректно изменить пароль
     @Test
-    public void updateUserPasswordCorrectResponseTest() {
+    public void updateCorrectUserPasswordResponseTest() {
         String json = "{\"password\": \"" + "Update" + testPassword + "\"}";
         UserRegisterResponse userUpdatePassword =
-                updateUserdWithAuthResponse(requestSpec, json, token);
+                updateUserWithAuthCheckResponse(requestSpec, json, token);
         MatcherAssert.assertThat(userUpdatePassword,
                 notNullValue());
+        // Авторизироваться под новым паролем
+        UserLogin newUserLogin = new UserLogin(testEmail, "Update" + testPassword );
+        loginUserCheckStatus(requestSpec, newUserLogin);
     }
 
-    // Корректно изменить email - проверить response
+    // Корректно изменить email
     @Test
-    public void updateUserEmailCorrectResponseTest() {
+    public void updateCorrectUserEmailResponseTest() {
         String json = "{\"email\": \"" + "Update" + testEmail + "\"}";
         UserRegisterResponse userUpdateEmail =
-                updateUserdWithAuthResponse(requestSpec, json, token);
+                updateUserWithAuthCheckResponse(requestSpec, json, token);
         MatcherAssert.assertThat(userUpdateEmail,
                 notNullValue());
+        // Авторизироваться под новым email
+        UserLogin newUserLogin = new UserLogin("Update" +testEmail,  testPassword );
+        loginUserCheckStatus(requestSpec, newUserLogin);
     }
 
-    // Некорректно изменить email - проверить статус
+    // Некорректно изменить email авторизированного пользователя
+    // Попытаться установить ему email, который уже иcпользуется -
+    // первым пользователем, созданным в Before
+
+    // Проверить статус
     @Test
-    public void updateUserEmailFallsStatusTest() {
+    public void updateUserDuplicateEmailFallsStatusTest() {
         String json = "{\"email\": \"" + testEmail + "\"}";
         // Создать второго пользователя
         UserRegister secondUser = new UserRegister("Update" + testEmail, testPassword, testName);
-        String secondToken = createUserResponse(requestSpec, secondUser).
+        String secondToken = createUserCheckResponse(requestSpec, secondUser).
                 getAccessToken().replace("Bearer ", "");
         // Попытаться обновить email второму пользователю
         given()
@@ -136,28 +111,7 @@ public class UpdateUser extends AbstractTest {
                 .when()
                 .patch("auth/user")
                 .then()
-                .statusCode(SC_FORBIDDEN);
-        // Удалить второго пользователя
-        deleteUserCheckStatus(requestSpec, userRegister, secondToken);
-    }
-
-    // Некорректно изменить email - проверить response
-    @Test
-    public void updateUserEmailFallsResponseTest() {
-        String json = "{\"email\": \"" + testEmail + "\"}";
-        // Создать второго пользователя
-        UserRegister secondUser = new UserRegister("Update" + testEmail, testPassword, testName);
-        String secondToken = createUserResponse(requestSpec, secondUser).
-                getAccessToken().replace("Bearer ", "");
-        // Попытаться обновить email второму пользователю
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(json)
-                .auth().oauth2(secondToken)
-                .when()
-                .patch("auth/user")
-                .then()
+                .statusCode(SC_FORBIDDEN)
                 .body("message",
                         equalTo("User with such email already exists"))
                 .and()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="diplom_api.test.LoginUserTest" time="14.895" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="diplom_api.test.LoginUserTest" time="8.168" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="18"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="RU"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-18.0.1.1\bin"/>
-    <property name="sun.java.command" value="C:\Users\User\AppData\Local\Temp\surefire3158566268107633279\surefirebooter17353088541089903966.jar C:\Users\User\AppData\Local\Temp\surefire3158566268107633279 2022-08-08T23-13-45_248-jvmRun1 surefire78337764222913262tmp surefire_011965252589206086191tmp"/>
+    <property name="sun.java.command" value="C:\Users\User\AppData\Local\Temp\surefire10065788346323817005\surefirebooter18401103109969748293.jar C:\Users\User\AppData\Local\Temp\surefire10065788346323817005 2022-08-10T14-58-08_391-jvmRun1 surefire634252499141018525tmp surefire_013401297911644488725tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\yandex\Diplom\DiplomAPIDraft\target\test-classes;C:\yandex\Diplom\DiplomAPIDraft\target\classes;C:\Users\User\.m2\repository\com\google\code\gson\gson\2.9.0\gson-2.9.0.jar;C:\Users\User\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.13.3\jackson-databind-2.13.3.jar;C:\Users\User\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.13.3\jackson-annotations-2.13.3.jar;C:\Users\User\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.13.3\jackson-core-2.13.3.jar;C:\Users\User\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\User\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\User\.m2\repository\net\bytebuddy\byte-buddy\1.12.10\byte-buddy-1.12.10.jar;C:\Users\User\.m2\repository\io\rest-assured\rest-assured\5.1.1\rest-assured-5.1.1.jar;C:\Users\User\.m2\repository\org\apache\groovy\groovy\4.0.1\groovy-4.0.1.jar;C:\Users\User\.m2\repository\org\apache\groovy\groovy-xml\4.0.1\groovy-xml-4.0.1.jar;C:\Users\User\.m2\repository\org\apache\httpcomponents\httpclient\4.5.13\httpclient-4.5.13.jar;C:\Users\User\.m2\repository\org\apache\httpcomponents\httpcore\4.4.13\httpcore-4.4.13.jar;C:\Users\User\.m2\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;C:\Users\User\.m2\repository\commons-codec\commons-codec\1.11\commons-codec-1.11.jar;C:\Users\User\.m2\repository\org\apache\httpcomponents\httpmime\4.5.13\httpmime-4.5.13.jar;C:\Users\User\.m2\repository\org\hamcrest\hamcrest\2.1\hamcrest-2.1.jar;C:\Users\User\.m2\repository\org\ccil\cowan\tagsoup\tagsoup\1.2.1\tagsoup-1.2.1.jar;C:\Users\User\.m2\repository\io\rest-assured\json-path\5.1.1\json-path-5.1.1.jar;C:\Users\User\.m2\repository\org\apache\groovy\groovy-json\4.0.1\groovy-json-4.0.1.jar;C:\Users\User\.m2\repository\io\rest-assured\rest-assured-common\5.1.1\rest-assured-common-5.1.1.jar;C:\Users\User\.m2\repository\io\rest-assured\xml-path\5.1.1\xml-path-5.1.1.jar;C:\Users\User\.m2\repository\org\apache\commons\commons-lang3\3.11\commons-lang3-3.11.jar;C:\Users\User\.m2\repository\io\qameta\allure\allure-junit4\2.18.1\allure-junit4-2.18.1.jar;C:\Users\User\.m2\repository\io\qameta\allure\allure-java-commons\2.18.1\allure-java-commons-2.18.1.jar;C:\Users\User\.m2\repository\org\slf4j\slf4j-api\1.7.30\slf4j-api-1.7.30.jar;C:\Users\User\.m2\repository\io\qameta\allure\allure-model\2.18.1\allure-model-2.18.1.jar;C:\Users\User\.m2\repository\io\qameta\allure\allure-rest-assured\2.18.1\allure-rest-assured-2.18.1.jar;C:\Users\User\.m2\repository\io\qameta\allure\allure-attachments\2.18.1\allure-attachments-2.18.1.jar;C:\Users\User\.m2\repository\org\freemarker\freemarker\2.3.31\freemarker-2.3.31.jar;"/>
     <property name="allure.results.directory" value="C:\yandex\Diplom\DiplomAPIDraft\target/allure-results"/>
@@ -31,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\User\AppData\Local\Temp\surefire3158566268107633279\surefirebooter17353088541089903966.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\User\AppData\Local\Temp\surefire10065788346323817005\surefirebooter18401103109969748293.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="18.0.1.1+2-6"/>
@@ -58,10 +58,10 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="62.0"/>
   </properties>
-  <testcase name="loginUserWithWrongEmailFailsResponseTest" classname="diplom_api.test.LoginUserTest" time="1.839"/>
-  <testcase name="loginUserWithWrongPasswordFailsResponseTest" classname="diplom_api.test.LoginUserTest" time="2.234"/>
-  <testcase name="loginUserWithWrongPasswordFailsTest" classname="diplom_api.test.LoginUserTest" time="3.004"/>
-  <testcase name="loginUserSuccessTest" classname="diplom_api.test.LoginUserTest" time="2.959"/>
-  <testcase name="loginUserWithWrongEmailFailsTest" classname="diplom_api.test.LoginUserTest" time="2.281"/>
-  <testcase name="loginUserSuccessResponseTest" classname="diplom_api.test.LoginUserTest" time="2.56"/>
+  <testcase name="loginUserWithWrongEmailFailsResponseTest" classname="diplom_api.test.LoginUserTest" time="1.102"/>
+  <testcase name="loginUserWithWrongPasswordFailsResponseTest" classname="diplom_api.test.LoginUserTest" time="1.518"/>
+  <testcase name="loginUserWithWrongPasswordFailsTest" classname="diplom_api.test.LoginUserTest" time="1.456"/>
+  <testcase name="loginUserSuccessTest" classname="diplom_api.test.LoginUserTest" time="1.337"/>
+  <testcase name="loginUserWithWrongEmailFailsTest" classname="diplom_api.test.LoginUserTest" time="1.364"/>
+  <testcase name="loginUserSuccessResponseTest" classname="diplom_api.test.LoginUserTest" time="1.391"/>
 </testsuite>

@@ -1,4 +1,5 @@
 package diplom_api.test;
+
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import diplom_api.pojo.UserRegister;
@@ -13,9 +14,10 @@ import static diplom_api.proc.UserProc.*;
 
 public class CreateUserTest extends AbstractTest {
 
-    // Можно создать уникального пользователя
+    // Создание уникального пользователя
+    // Проверить возвращаемый статус
     @Test
-    public void createUserSuccessTest() {
+    public void createCorrectUserStatusTest() {
         // Создать пользователя и проверить возвращаемый статус
         given()
                 .spec(requestSpec)
@@ -25,33 +27,38 @@ public class CreateUserTest extends AbstractTest {
                 .post("auth/register")
                 .then()
                 .statusCode(SC_OK);
-        // Получить accessToken
-        UserRegisterResponse userRegisterResponse =
-                loginUserResponse(requestSpec, userLogin);
+        // Убедиться, что пользователь может авторизироваться и получить accessToken
+        UserRegisterResponse userLoginResponse =
+                loginUserCheckResponse(requestSpec, userLogin);
         // Удалить пользователя
         deleteUserCheckStatus(requestSpec, userRegister,
-                userRegisterResponse.getAccessToken().replace("Bearer ", ""));
+                userLoginResponse.getAccessToken().replace("Bearer ", ""));
     }
 
+    // Проверить возвращаемый response
     @Test
-    public void createUserSuccessResponseTest() {
+    public void createCorrectUserResponseTest() {
         // Создать пользователя
-        UserRegisterResponse userRegisterResponse =
-                createUserResponse(requestSpec, userRegister);
+        UserRegisterResponse UserRegisterResponse =
+                createUserCheckResponse(requestSpec, userRegister);
         // Убедиться. что вернулся ожидаемый JSON
-        MatcherAssert.assertThat(userRegisterResponse,
+        MatcherAssert.assertThat(UserRegisterResponse,
                 notNullValue());
-        // Получить accessToken
+        // Убедиться, что пользователь может авторизироваться
+        UserRegisterResponse userLoginResponse =
+                loginUserCheckResponse(requestSpec, userLogin);
         // Удалить пользователя
-        deleteUserCheckStatus(requestSpec, userRegister, userRegisterResponse.getAccessToken().replace("Bearer ", ""));
+        deleteUserCheckStatus(requestSpec, userRegister,
+                userLoginResponse.getAccessToken().replace("Bearer ", ""));
     }
 
     // Нельзя создать 2 одинаковых пользователей
+    // Проверить возвращаемый статус
     @Test
-    public void createTwoEqualUsersFailsTest() {
+    public void createTwoEqualUsersFallsTest() {
         // Создать первого  пользователя
         UserRegisterResponse userRegisterResponse =
-                createUserResponse(requestSpec, userRegister);
+                createUserCheckResponse(requestSpec, userRegister);
         // Попытаться создать второго пользователя с теми же параметрами
         // и убедиться, что вернулся верный статус
         given()
@@ -61,25 +68,7 @@ public class CreateUserTest extends AbstractTest {
                 .when()
                 .post("auth/register")
                 .then()
-                .statusCode(SC_FORBIDDEN);
-        // Удалить первого пользователя
-        deleteUserCheckStatus(requestSpec, userRegister,
-                userRegisterResponse.getAccessToken().replace("Bearer ", ""));
-    }
-    @Test
-    public void createTwoEqualUsersFailsResponseTest() {
-        // Создать первого  пользователя
-        UserRegisterResponse userRegisterResponse =
-                createUserResponse(requestSpec, userRegister);
-        // Попытаться создать второго пользователя с теми же параметрами
-        // и убедиться, что вернулся false и ожидаемое сообщение
-        given()
-                .spec(requestSpec)
-                .and()
-                .body(userRegister)
-                .when()
-                .post("auth/register")
-                .then()
+                .statusCode(SC_FORBIDDEN)
                 .body("message",
                         equalTo("User already exists"))
                 .and()
@@ -89,41 +78,28 @@ public class CreateUserTest extends AbstractTest {
         deleteUserCheckStatus(requestSpec, userRegister,
                 userRegisterResponse.getAccessToken().replace("Bearer ", ""));
     }
+
     // Нельзя создать пользователя, если не указано одно из обязательных полей
+    // Попытка создать пользователя без указания email
     @Test
-    public void createUserWithoutEmailFailsTest() {
+    public void createUserWithoutEmailFallsStatusTest() {
         UserRegister userWithoutEmail = new UserRegister(null, testPassword, testName);
-        createUserWithountNessaryFieldCheckStatus(requestSpec, userWithoutEmail);
+        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutEmail);
     }
 
+    // Попытка создать пользователя без указания пароля
     @Test
-    public void createUserWithoutPasswordFailsTest() {
+    public void createUserWithoutPasswordFallsStatusTest() {
         UserRegister userWithoutPassword = new UserRegister(testEmail, null, testName);
-        createUserWithountNessaryFieldCheckStatus(requestSpec, userWithoutPassword);
+        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutPassword);
     }
 
+    // Попытка создать пользователя без указания имени
     @Test
-    public void createUserWithoutNameFailsTest() {
+    public void createUserWithoutNameFallsStatusTest() {
         UserRegister userWithoutName = new UserRegister(testEmail, testPassword, null);
-        createUserWithountNessaryFieldCheckStatus(requestSpec, userWithoutName);
+        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutName);
     }
 
-    @Test
-    public void createUserWithoutEmailFailsResponseTest() {
-        UserRegister userWithoutEmail = new UserRegister(null, testPassword, testName);
-        createUserWithountNessaryFieldCheckResponse(requestSpec, userWithoutEmail);
-    }
-
-    @Test
-    public void createUserWithoutPasswordFailsResponseTest() {
-        UserRegister userWithoutPassword = new UserRegister(testEmail, null, testName);
-        createUserWithountNessaryFieldCheckResponse(requestSpec, userWithoutPassword);
-    }
-
-    @Test
-    public void createUserWithoutNameFailsResponseTest() {
-        UserRegister userWithoutName = new UserRegister(testEmail, testPassword, null);
-        createUserWithountNessaryFieldCheckResponse(requestSpec, userWithoutName);
-    }
 
 }

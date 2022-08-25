@@ -1,15 +1,11 @@
 package diplom_api.pojo;
 
-//import com.fasterxml.jackson.annotation.JsonInclude;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 public class UserRegister {
-   // @JsonInclude(JsonInclude.Include.NON_NULL)
+
     private String email;
-  //  @JsonInclude(JsonInclude.Include.NON_NULL)
+
     private String password;
-   // @JsonInclude(JsonInclude.Include.NON_NULL)
+
     private String name;
 
     public UserRegister() {
