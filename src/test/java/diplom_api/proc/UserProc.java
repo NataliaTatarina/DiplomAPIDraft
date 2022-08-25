@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class UserProc {
 
     // Запрос на создание пользователя без необходимых полей
-    public static void createUserWithoutNecessaryFieldCheck(RequestSpecification requestSpec, UserRegister userRegister) {
+    public static void createUserWithoutNecessaryField(RequestSpecification requestSpec, UserRegister userRegister) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -30,7 +30,7 @@ public class UserProc {
 
 
     // Запрос на создание пользователя
-    public static UserRegisterResponse createUserCheckResponse(RequestSpecification requestSpec, UserRegister userRegister) {
+    public static UserRegisterResponse createUserResponse(RequestSpecification requestSpec, UserRegister userRegister) {
         return
                 given()
                         .spec(requestSpec)
@@ -44,7 +44,7 @@ public class UserProc {
 
     // Запрос на удаление пользователя
     // Проверяется, что возвращаемый статус - SC_ACCEPTED
-    public static void deleteUserCheckStatus(RequestSpecification requestSpec, UserRegister userRegister, String token) {
+    public static void deleteUser(RequestSpecification requestSpec, UserRegister userRegister, String token) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -57,7 +57,7 @@ public class UserProc {
     }
 
     // Заррос на авторизацию пользователя
-    public static UserRegisterResponse loginUserCheckResponse(RequestSpecification requestSpec, UserLogin userLogin) {
+    public static UserRegisterResponse loginUserResponse(RequestSpecification requestSpec, UserLogin userLogin) {
         return
                 given()
                         .spec(requestSpec)
@@ -70,7 +70,7 @@ public class UserProc {
     }
 
     // Заррос на авторизацию пользователя - проверка статуса
-    public static void loginUserCheckStatus(RequestSpecification requestSpec, UserLogin userLogin) {
+    public static void loginUser(RequestSpecification requestSpec, UserLogin userLogin) {
                     given()
                         .spec(requestSpec)
                         .and()
@@ -82,7 +82,7 @@ public class UserProc {
     }
     // Запрос на авторизацию пользователя без одного из необходимых полей
     // Проверяется, что возвращаемый статус - SC_UNAUTHORIZED
-    public static void loginUserWithOneWrongFieldCheck(RequestSpecification requestSpec, UserLogin userLogin) {
+    public static void loginUserWithOneWrongField(RequestSpecification requestSpec, UserLogin userLogin) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -100,7 +100,7 @@ public class UserProc {
 
     // Запрос на измение полей учетной записи пользователя
     // Проверяется, что возвращаемый статус соответствует ожидаемому
-    public static void updateUserCheckStatusAndResponse(RequestSpecification requestSpec, String json, String token, int status) {
+    public static void updateUser(RequestSpecification requestSpec, String json, String token, int status) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -119,7 +119,7 @@ public class UserProc {
 
 
     // Запрос на измение полей учетной записи авторизированного пользователя
-    public static UserRegisterResponse updateUserWithAuthCheckResponse(RequestSpecification requestSpec, String json, String token) {
+    public static UserRegisterResponse updateUserResponse(RequestSpecification requestSpec, String json, String token) {
         return
                 given()
                         .spec(requestSpec)

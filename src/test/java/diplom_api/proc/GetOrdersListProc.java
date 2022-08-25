@@ -7,7 +7,7 @@ import org.hamcrest.Matchers;
 import static io.restassured.RestAssured.given;
 
 public class GetOrdersListProc {
-    public static OrdersList getOrderList (RequestSpecification requestSpec, String token)
+    public static OrdersList getOrderListResponse(RequestSpecification requestSpec, String token)
     {
        return given()
                 .spec(requestSpec)
@@ -19,8 +19,8 @@ public class GetOrdersListProc {
                 .as(OrdersList.class);
     }
 
-    public static void getOrderListStatus (RequestSpecification requestSpec, String token,
-                                           int status, String message, boolean success)
+    public static void getOrderList(RequestSpecification requestSpec, String token,
+                                    int status, String message, boolean success)
     {
         given()
                 .spec(requestSpec)

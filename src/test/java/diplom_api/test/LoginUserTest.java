@@ -19,13 +19,13 @@ public class LoginUserTest extends AbstractTest {
     public void createUserBeforeLoginUserTest() {
         // Создать пользователя
         // Получить accessToken
-        token = createUserCheckResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
+        token = createUserResponse(requestSpec, userRegister).getAccessToken().replace("Bearer ", "");
     }
 
     @After
     public void deleteUserAfterLoginUserTest() {
         // Удалить пользователя
-        deleteUserCheckStatus(requestSpec, userRegister, token);
+        deleteUser(requestSpec, userRegister, token);
     }
 
     // Успешная авторизация под существующим паролем
@@ -46,7 +46,7 @@ public class LoginUserTest extends AbstractTest {
     @Test
     public void loginCorrectUserResponseTest() {
         UserRegisterResponse userLoginResponse =
-                loginUserCheckResponse(requestSpec, userLogin);
+                loginUserResponse(requestSpec, userLogin);
         // Убедиться. что вернулся ожидаемый JSON
         MatcherAssert.assertThat(userLoginResponse,
                 notNullValue());
@@ -69,14 +69,14 @@ public class LoginUserTest extends AbstractTest {
     public void loginUserWithWrongEmailFallsStatusTest() {
         UserLogin userLoginWithWrongEmail =
                 new UserLogin(testEmail + testEmail, testPassword);
-        loginUserWithOneWrongFieldCheck(requestSpec, userLoginWithWrongEmail);
+        loginUserWithOneWrongField(requestSpec, userLoginWithWrongEmail);
     }
 
     // Пользователь существует, пароль некорректный
     @Test
     public void loginUserWithWrongPasswordFallsResponseTest() {
         UserLogin userLoginWithWrongPassword = new UserLogin(testEmail, testPassword + testPassword);
-        loginUserWithOneWrongFieldCheck(requestSpec, userLoginWithWrongPassword);
+        loginUserWithOneWrongField(requestSpec, userLoginWithWrongPassword);
     }
 
 }

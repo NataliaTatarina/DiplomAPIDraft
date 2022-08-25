@@ -1,18 +1,16 @@
 package diplom_api.proc;
 
 import diplom_api.pojo.OrderResponse;
-import diplom_api.pojo.UserRegisterResponse;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class CreateOrderProc {
-    // Запрос на создание заказа пользователем - проверяется ответ:
-    // значение поля success и текст сообщения
+    // Запрос на создание заказа пользователем
     public static void
-    createOrderCheck(RequestSpecification requestSpec, String token, String json,
-                                     int status, boolean success, String message) {
+    createOrder(RequestSpecification requestSpec, String token, String json,
+                int status, boolean success, String message) {
         given()
                 .spec(requestSpec)
                 .and()
@@ -30,7 +28,7 @@ public class CreateOrderProc {
     }
 
     public static OrderResponse
-    createOrderCheckResponse(RequestSpecification requestSpec, String token, String json) {
+    createOrderResponse(RequestSpecification requestSpec, String token, String json) {
         return given()
                 .spec(requestSpec)
                 .and()

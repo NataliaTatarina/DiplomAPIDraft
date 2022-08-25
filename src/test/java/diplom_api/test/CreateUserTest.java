@@ -29,9 +29,9 @@ public class CreateUserTest extends AbstractTest {
                 .statusCode(SC_OK);
         // Убедиться, что пользователь может авторизироваться и получить accessToken
         UserRegisterResponse userLoginResponse =
-                loginUserCheckResponse(requestSpec, userLogin);
+                loginUserResponse(requestSpec, userLogin);
         // Удалить пользователя
-        deleteUserCheckStatus(requestSpec, userRegister,
+        deleteUser(requestSpec, userRegister,
                 userLoginResponse.getAccessToken().replace("Bearer ", ""));
     }
 
@@ -40,15 +40,15 @@ public class CreateUserTest extends AbstractTest {
     public void createCorrectUserResponseTest() {
         // Создать пользователя
         UserRegisterResponse UserRegisterResponse =
-                createUserCheckResponse(requestSpec, userRegister);
+                createUserResponse(requestSpec, userRegister);
         // Убедиться. что вернулся ожидаемый JSON
         MatcherAssert.assertThat(UserRegisterResponse,
                 notNullValue());
         // Убедиться, что пользователь может авторизироваться
         UserRegisterResponse userLoginResponse =
-                loginUserCheckResponse(requestSpec, userLogin);
+                loginUserResponse(requestSpec, userLogin);
         // Удалить пользователя
-        deleteUserCheckStatus(requestSpec, userRegister,
+        deleteUser(requestSpec, userRegister,
                 userLoginResponse.getAccessToken().replace("Bearer ", ""));
     }
 
@@ -58,7 +58,7 @@ public class CreateUserTest extends AbstractTest {
     public void createTwoEqualUsersFallsTest() {
         // Создать первого  пользователя
         UserRegisterResponse userRegisterResponse =
-                createUserCheckResponse(requestSpec, userRegister);
+                createUserResponse(requestSpec, userRegister);
         // Попытаться создать второго пользователя с теми же параметрами
         // и убедиться, что вернулся верный статус
         given()
@@ -75,7 +75,7 @@ public class CreateUserTest extends AbstractTest {
                 .body("success",
                         equalTo(false));
         // Удалить первого пользователя
-        deleteUserCheckStatus(requestSpec, userRegister,
+        deleteUser(requestSpec, userRegister,
                 userRegisterResponse.getAccessToken().replace("Bearer ", ""));
     }
 
@@ -84,21 +84,21 @@ public class CreateUserTest extends AbstractTest {
     @Test
     public void createUserWithoutEmailFallsStatusTest() {
         UserRegister userWithoutEmail = new UserRegister(null, testPassword, testName);
-        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutEmail);
+        createUserWithoutNecessaryField(requestSpec, userWithoutEmail);
     }
 
     // Попытка создать пользователя без указания пароля
     @Test
     public void createUserWithoutPasswordFallsStatusTest() {
         UserRegister userWithoutPassword = new UserRegister(testEmail, null, testName);
-        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutPassword);
+        createUserWithoutNecessaryField(requestSpec, userWithoutPassword);
     }
 
     // Попытка создать пользователя без указания имени
     @Test
     public void createUserWithoutNameFallsStatusTest() {
         UserRegister userWithoutName = new UserRegister(testEmail, testPassword, null);
-        createUserWithoutNecessaryFieldCheck(requestSpec, userWithoutName);
+        createUserWithoutNecessaryField(requestSpec, userWithoutName);
     }
 
 
