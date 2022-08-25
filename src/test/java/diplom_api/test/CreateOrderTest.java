@@ -3,6 +3,7 @@ package diplom_api.test;
 import diplom_api.pojo.OrderResponse;
 import diplom_api.pojo.OrdersList;
 import io.restassured.specification.RequestSpecification;
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import static diplom_api.proc.CreateOrderProc.*;
 import static diplom_api.proc.GetIngredientsProc.getIngredients;
 import static diplom_api.proc.GetOrdersListProc.getOrderList;
 import static diplom_api.proc.UserProc.*;
+import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -56,6 +58,15 @@ public class CreateOrderTest extends AbstractTest {
                 "]}";
         // Создать заказ
         OrderResponse orderResponse = createOrderCheckResponse(requestSpec, "", json);
+        // Получить список заказов пользователя
+        OrdersList ordersList =        given()
+                .spec(requestSpec)
+                .when()
+                .get("orders/all")
+                .body()
+                .as(OrdersList.class);
+        // Убедиться, что в списке всех заказов есть созданный пользователем заказ
+
      }
 
     // Создать заказ без авторизации и c корректным хэшем двух ингредиентов
@@ -91,11 +102,11 @@ public class CreateOrderTest extends AbstractTest {
                 "]}";
         // Создать заказ
         OrderResponse orderResponse = createOrderCheckResponse(requestSpec, token, json);
-        // Получаем список заказов пользователя
-        // Находим там number звказа
-       // OrdersList ordersList = getOrderList(requestSpec, token);
-      // System.out.println(ordersList.getOrders().size());
-    }
+        // Получить список заказов пользователя
+        OrdersList ordersList = getOrderList(requestSpec, token);
+        // Убедиться, что в списке есть созданный пользователем заказ
+        Assert.assertEquals(orderResponse.getOrder().getNumber(), ordersList.getOrders().get(0).getNumber());
+     }
 
     // Создать заказ с авторизацией и c корректными хэшами двух ингредиентов
     @Test
@@ -103,6 +114,10 @@ public class CreateOrderTest extends AbstractTest {
         String json = "{\"ingredients\":[\"" + ingredients.getData().get(2).get_id() + "\", " +
                 "\"" + ingredients.getData().get(1).get_id() + "\"" +
                 "]}";
-        createOrderCheck(requestSpec, token, json, SC_OK, true, null);
+        OrderResponse orderResponse = createOrderCheckResponse(requestSpec, token, json);
+        // Получить список заказов пользователя
+        OrdersList ordersList = getOrderList(requestSpec, token);
+        // Убедиться, что в списке есть созданный пользователем заказ
+        Assert.assertEquals(orderResponse.getOrder().getNumber(), ordersList.getOrders().get(0).getNumber());
     }
 }

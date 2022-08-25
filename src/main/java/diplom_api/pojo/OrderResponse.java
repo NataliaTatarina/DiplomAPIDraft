@@ -1,11 +1,12 @@
 package diplom_api.pojo;
 
 
-public class OrderResponse {
-     private boolean success;
-     private String name;
-     private Order order;
+import java.util.List;
 
+public class OrderResponse {
+private boolean success;
+private String name;
+private Order order;
 
      public boolean isSuccess() {
           return success;

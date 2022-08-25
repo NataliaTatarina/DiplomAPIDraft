@@ -1,6 +1,8 @@
 package diplom_api.test;
 
+import diplom_api.pojo.OrderResponse;
 import diplom_api.pojo.OrdersList;
+import io.restassured.specification.RequestSpecification;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -10,9 +12,12 @@ import org.junit.Test;
 
 
 import static diplom_api.proc.CreateOrderProc.createOrderCheck;
+import static diplom_api.proc.CreateOrderProc.createOrderCheckResponse;
 import static diplom_api.proc.GetIngredientsProc.getIngredients;
 import static diplom_api.proc.GetOrdersListProc.getOrderList;
+import static diplom_api.proc.GetOrdersListProc.getOrderListStatus;
 import static diplom_api.proc.UserProc.createUserCheckResponse;
+import static diplom_api.proc.UserProc.deleteUserCheckStatus;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
@@ -36,31 +41,24 @@ public class OrdersListTest extends AbstractTest {
         String json1 = "{\"ingredients\":[\"" + ingredients.getData().get(0).get_id() + "\", " +
                 "\"" + ingredients.getData().get(size - 1).get_id() + "\"" +
                 "]}";
-        createOrderCheck(requestSpec, token, json1, SC_OK, true, null);
+        OrderResponse firstOrder = createOrderCheckResponse(requestSpec, token, json1);
         String json2 = "{\"ingredients\":[\"" + ingredients.getData().get(0).get_id() + "\", " +
                 "\"" + ingredients.getData().get(size - 1).get_id() + "\"" +
                 "]}";
-        createOrderCheck(requestSpec, token, json2, SC_OK, true, null);
+        OrderResponse secondOrder = createOrderCheckResponse(requestSpec, token, json2);
     }
 
     @After
     public void deleteUserAfterOrderListTest() {
         // Удалить пользователя
-        // deleteUserCheckStatus(requestSpec, userRegister, token);
+        deleteUserCheckStatus(requestSpec, userRegister, token);
     }
 
-    // Получить список заказов для авторизированного пользователя
+    // Получить список заказов для авторизированного пользователя - проверить статус
     @Test
     public void getOrdersListForUserWithAuthStatusTest() {
-        given()
-                .spec(requestSpec)
-                .and()
-                .auth().oauth2(token)
-                .when()
-                .get("orders")
-                .then()
-                .statusCode(SC_OK);
-    }
+        getOrderListStatus (requestSpec, token, SC_OK, null, true);
+      }
 
     @Test
     public void getOrdersListForUserWithAuthResponseTest() {
@@ -72,19 +70,8 @@ public class OrdersListTest extends AbstractTest {
     }
 
     // Получить список без авторизации
-    // Проверить статус ответа
     @Test
     public void getOrdersListForUserWithoutAuthTest() {
-        given()
-                .spec(requestSpec)
-                .when()
-                .get("orders")
-                .then()
-                .statusCode(SC_UNAUTHORIZED)
-                .body("message",
-                        Matchers.equalTo("You should be authorised"))
-                .and()
-                .body("success",
-                        Matchers.equalTo(false));
+        getOrderListStatus (requestSpec, "", SC_UNAUTHORIZED, "You should be authorised", false);
     }
 }
