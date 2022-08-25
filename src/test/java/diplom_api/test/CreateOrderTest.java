@@ -1,22 +1,20 @@
 package diplom_api.test;
 
 import diplom_api.pojo.OrderResponse;
-import diplom_api.pojo.Orders;
 import diplom_api.pojo.OrdersList;
-import io.restassured.specification.RequestSpecification;
-import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static diplom_api.proc.CreateOrderProc.*;
+import static diplom_api.proc.CreateOrderProc.createOrderCheck;
+import static diplom_api.proc.CreateOrderProc.createOrderCheckResponse;
 import static diplom_api.proc.GetIngredientsProc.getIngredients;
 import static diplom_api.proc.GetOrdersListProc.getOrderList;
-import static diplom_api.proc.UserProc.*;
+import static diplom_api.proc.UserProc.createUserCheckResponse;
+import static diplom_api.proc.UserProc.deleteUserCheckStatus;
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_OK;
 
 public class CreateOrderTest extends AbstractTest {
 
@@ -59,18 +57,7 @@ public class CreateOrderTest extends AbstractTest {
                 "]}";
         // Создать заказ
         OrderResponse orderResponse = createOrderCheckResponse(requestSpec, "", json);
-        // Получить список заказов пользователя
-        OrdersList ordersList =        given()
-                .spec(requestSpec)
-                .when()
-                .get("orders/all")
-                .body()
-                .as(OrdersList.class);
-        // Убедиться, что в списке всех заказов есть созданный пользователем заказ
-       int i = 1;
-        for ( Orders orders : ordersList.getOrders())
-        {System.out.println(i); i=i+1;}
-     }
+      }
 
     // Создать заказ без авторизации и c корректным хэшем двух ингредиентов
     @Test
