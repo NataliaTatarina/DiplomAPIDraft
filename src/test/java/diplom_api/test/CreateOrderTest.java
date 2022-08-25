@@ -1,6 +1,7 @@
 package diplom_api.test;
 
 import diplom_api.pojo.OrderResponse;
+import diplom_api.pojo.Orders;
 import diplom_api.pojo.OrdersList;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.MatcherAssert;
@@ -66,7 +67,9 @@ public class CreateOrderTest extends AbstractTest {
                 .body()
                 .as(OrdersList.class);
         // Убедиться, что в списке всех заказов есть созданный пользователем заказ
-
+       int i = 1;
+        for ( Orders orders : ordersList.getOrders())
+        {System.out.println(i); i=i+1;}
      }
 
     // Создать заказ без авторизации и c корректным хэшем двух ингредиентов
